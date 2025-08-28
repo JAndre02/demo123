@@ -2,86 +2,134 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Workout Assistant 💪</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workout Assistant 💪</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #f0f4f8, #dbeafe);
+      color: #1e293b;
+    }
+    .container {
       max-width: 600px;
-      margin: auto;
-      padding: 20px;
-      background: #f8f8f8;
+      margin: 0 auto;
+      padding: 2rem;
     }
-    h1, h2 { text-align: center; }
-    .question, #result, .stopwatch, .timer { margin-top: 20px; }
-    button {
-      margin: 5px;
-      padding: 10px 15px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background-color: #007bff;
-      color: white;
-    }
-    button:hover { background-color: #0056b3; }
-    ul { padding-left: 20px; }
-    .stopwatch span, .timer span {
-      font-size: 24px;
-      display: inline-block;
-      margin: 5px 10px;
-    }
-    .stopwatch, .timer {
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
+    h1, h2, h3 {
       text-align: center;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      color: #0f172a;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      animation: fadeIn 0.4s ease;
+    }
+    .question p {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .question button {
+      background-color: #3b82f6;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      margin: 0.3rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .question button:hover {
+      background-color: #2563eb;
+    }
+    ul { padding-left: 1.2rem; }
+    .highlight {
+      color: #16a34a;
+      font-weight: bold;
+    }
+    .timer, .stopwatch {
+      text-align: center;
+      background-color: #f9fafb;
+      border: 1px dashed #94a3b8;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stopwatch span, .timer span {
+      font-size: 2rem;
+      font-weight: 600;
+    }
+    .controls button {
+      margin: 0.3rem;
+      background-color: #64748b;
+    }
+    .controls button:hover {
+      background-color: #475569;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     @media (max-width: 480px) {
-      button { width: 100%; margin: 5px 0; }
+      .question button, .controls button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>🏋️‍♂️ Workout Assistant</h1>
 
-  <h1>Workout Assistant 💪</h1>
+    <div class="card question" id="question1">
+      <p>What do you want to work out today?</p>
+      <button onclick="selectWorkout('legs')">Legs</button>
+      <button onclick="selectWorkout('push')">Push</button>
+      <button onclick="selectWorkout('pull')">Pull</button>
+    </div>
 
-  <div class="question" id="question1">
-    <p>What do you want to work out today?</p>
-    <button onclick="selectWorkout('legs')">Legs</button>
-    <button onclick="selectWorkout('push')">Push</button>
-    <button onclick="selectWorkout('pull')">Pull</button>
-  </div>
+    <div class="card question" id="question2" style="display:none">
+      <p>Do you like training this?</p>
+      <button onclick="selectPreference('love')">I love it</button>
+      <button onclick="selectPreference('ok')">I think it's ok</button>
+      <button onclick="selectPreference('hate')">I hate it</button>
+    </div>
 
-  <div class="question" id="question2" style="display: none;">
-    <p>Do you like training this?</p>
-    <button onclick="selectPreference('love')">I love it</button>
-    <button onclick="selectPreference('ok')">I think it's ok</button>
-    <button onclick="selectPreference('hate')">I hate it</button>
-  </div>
+    <div class="card question" id="question3" style="display:none">
+      <p>How much time do you have?</p>
+      <button onclick="selectTime('long')">A lot of time</button>
+      <button onclick="selectTime('medium')">Somewhat of time</button>
+      <button onclick="selectTime('short')">Not much time</button>
+    </div>
 
-  <div class="question" id="question3" style="display: none;">
-    <p>How much time do you have?</p>
-    <button onclick="selectTime('long')">A lot of time</button>
-    <button onclick="selectTime('medium')">Somewhat of time</button>
-    <button onclick="selectTime('short')">Not much time</button>
-  </div>
+    <div class="card" id="result"></div>
 
-  <div id="result"></div>
+    <div class="card stopwatch" id="stopwatch" style="display:none">
+      <h3>⏱️ Stopwatch</h3>
+      <span id="display">00:00</span>
+      <div class="controls">
+        <button onclick="startStopwatch()">Start</button>
+        <button onclick="stopStopwatch()">Stop</button>
+        <button onclick="resetStopwatch()">Reset</button>
+      </div>
+    </div>
 
-  <div class="stopwatch" style="display:none;" id="stopwatch">
-    <h3>⏱️ Stopwatch</h3>
-    <span id="display">00:00</span><br>
-    <button onclick="startStopwatch()">Start</button>
-    <button onclick="stopStopwatch()">Stop</button>
-    <button onclick="resetStopwatch()">Reset</button>
-  </div>
-
-  <div class="timer" style="display:none;" id="set-timer">
-    <h3>⏲️ Set Rest Timer</h3>
-    <p>Rest time between sets:</p>
-    <span id="countdown">--</span><br>
-    <button onclick="startSetTimer()">Start Timer</button>
+    <div class="card timer" id="set-timer" style="display:none">
+      <h3>⏲️ Set Rest Timer</h3>
+      <p>Rest time between sets:</p>
+      <span id="countdown">--</span>
+      <div class="controls">
+        <button onclick="startSetTimer()">Start Timer</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -109,100 +157,91 @@
 
     function selectWorkout(val) {
       workout = val;
-      document.getElementById('question1').style.display = 'none';
-      document.getElementById('question2').style.display = 'block';
+      show('question2');
+      hide('question1');
     }
 
     function selectPreference(val) {
       preference = val;
-      document.getElementById('question2').style.display = 'none';
-      document.getElementById('question3').style.display = 'block';
+      show('question3');
+      hide('question2');
     }
 
     function selectTime(val) {
       time = val;
-      document.getElementById('question3').style.display = 'none';
-      showRoutine();
+      hide('question3');
+      buildRoutine();
     }
 
-    function showRoutine() {
-      let type = preference === 'love' ? 'calisthenics' : preference === 'ok' ? 'weights' : 'machines';
-      let routine = [...exercises[workout][type]].sort(() => 0.5 - Math.random());
-      let reps, sets, rest, note = '';
+    function buildRoutine() {
+      const type = preference === 'love' ? 'calisthenics' : preference === 'ok' ? 'weights' : 'machines';
+      let list = [...exercises[workout][type]].sort(() => 0.5 - Math.random());
+      let sets, reps, rest, note = '';
 
       if (time === 'long') {
         reps = type === 'calisthenics' ? '8–12 slow reps' : 'light weight, 12–15 reps';
         sets = '4 sets';
-        rest = '3 mins between sets & reps';
-        note = '<strong>Make each rep slow and controlled.</strong>';
+        rest = '3 mins';
         setRestTime = 180;
-        routine = routine.slice(0, 5);
+        note = 'Make each rep <span class="highlight">slow and controlled</span>.';
+        list = list.slice(0, 5);
       } else if (time === 'medium') {
         reps = type === 'calisthenics' ? '12–15 reps' : 'moderate weight, 8–10 reps';
         sets = '3 sets';
-        rest = '2 mins between sets';
+        rest = '2 mins';
         setRestTime = 120;
-        routine = routine.slice(0, 5);
+        list = list.slice(0, 5);
       } else {
         reps = type === 'calisthenics' ? '20–30 fast reps' : 'heavy weight, 4–6 reps';
         sets = '2 sets';
-        rest = '3 mins between sets';
+        rest = '3 mins';
         setRestTime = 180;
-        routine = routine.slice(0, 4);
+        list = list.slice(0, 4);
       }
 
-      let output = `<h2>Your ${workout.toUpperCase()} Routine (${type})</h2>`;
-      output += `<p>${sets} of each exercise • ${reps} • ${rest}</p>`;
-      output += `<ul>${routine.map(ex => `<li>${ex}</li>`).join('')}</ul>`;
-      if (note) output += `<p style="color: darkgreen;">${note}</p>`;
-      document.getElementById('result').innerHTML = output;
+      document.getElementById('result').innerHTML = `
+        <h2>Your ${workout.toUpperCase()} Routine (${type})</h2>
+        <p>${sets} • ${reps} • Rest: ${rest}</p>
+        <ul>${list.map(e => `<li>${e}</li>`).join('')}</ul>
+        ${note ? `<p>${note}</p>` : ''}
+      `;
 
-      document.getElementById('stopwatch').style.display = 'block';
-      document.getElementById('set-timer').style.display = 'block';
+      show('stopwatch');
+      show('set-timer');
     }
 
-    // Stopwatch functions
+    function show(id) { document.getElementById(id).style.display = 'block'; }
+    function hide(id) { document.getElementById(id).style.display = 'none'; }
+
+    // Stopwatch
     function startStopwatch() {
       if (stopwatchInterval) return;
       stopwatchInterval = setInterval(() => {
         seconds++;
-        updateStopwatch();
+        const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        document.getElementById('display').textContent = `${m}:${s}`;
       }, 1000);
     }
+    function stopStopwatch() { clearInterval(stopwatchInterval); stopwatchInterval = null; }
+    function resetStopwatch() { stopStopwatch(); seconds = 0; document.getElementById('display').textContent = '00:00'; }
 
-    function stopStopwatch() {
-      clearInterval(stopwatchInterval);
-      stopwatchInterval = null;
-    }
-
-    function resetStopwatch() {
-      stopStopwatch();
-      seconds = 0;
-      updateStopwatch();
-    }
-
-    function updateStopwatch() {
-      let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-      let secs = (seconds % 60).toString().padStart(2, '0');
-      document.getElementById('display').textContent = `${mins}:${secs}`;
-    }
-
-    // Set Timer
+    // Set Rest Timer
     function startSetTimer() {
-      let countdown = setRestTime;
-      const countdownEl = document.getElementById('countdown');
-      countdownEl.textContent = countdown + "s";
-
+      let t = setRestTime;
+      const el = document.getElementById('countdown');
+      el.textContent = `${t}s`;
       const interval = setInterval(() => {
-        countdown--;
-        countdownEl.textContent = countdown + "s";
-        if (countdown <= 0) {
+        t--;
+        el.textContent = `${t}s`;
+        if (t <= 0) {
           clearInterval(interval);
-          countdownEl.textContent = "⏰ Time to start next set!";
-          alert("Rest time over! Start your next set.");
+          el.textContent = '⏰ Time to start next set!';
+          alert('Time to start your next set!');
         }
       }, 1000);
     }
   </script>
 </body>
 </html>
+
