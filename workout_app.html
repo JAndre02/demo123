@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Workout Assistant 💪</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background: #f8f8f8;
+    }
+    h1, h2 { text-align: center; }
+    .question, #result, .stopwatch, .timer { margin-top: 20px; }
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: white;
+    }
+    button:hover { background-color: #0056b3; }
+    ul { padding-left: 20px; }
+    .stopwatch span, .timer span {
+      font-size: 24px;
+      display: inline-block;
+      margin: 5px 10px;
+    }
+    .stopwatch, .timer {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    @media (max-width: 480px) {
+      button { width: 100%; margin: 5px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Workout Assistant 💪</h1>
+
+  <div class="question" id="question1">
+    <p>What do you want to work out today?</p>
+    <button onclick="selectWorkout('legs')">Legs</button>
+    <button onclick="selectWorkout('push')">Push</button>
+    <button onclick="selectWorkout('pull')">Pull</button>
+  </div>
+
+  <div class="question" id="question2" style="display: none;">
+    <p>Do you like training this?</p>
+    <button onclick="selectPreference('love')">I love it</button>
+    <button onclick="selectPreference('ok')">I think it's ok</button>
+    <button onclick="selectPreference('hate')">I hate it</button>
+  </div>
+
+  <div class="question" id="question3" style="display: none;">
+    <p>How much time do you have?</p>
+    <button onclick="selectTime('long')">A lot of time</button>
+    <button onclick="selectTime('medium')">Somewhat of time</button>
+    <button onclick="selectTime('short')">Not much time</button>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="stopwatch" style="display:none;" id="stopwatch">
+    <h3>⏱️ Stopwatch</h3>
+    <span id="display">00:00</span><br>
+    <button onclick="startStopwatch()">Start</button>
+    <button onclick="stopStopwatch()">Stop</button>
+    <button onclick="resetStopwatch()">Reset</button>
+  </div>
+
+  <div class="timer" style="display:none;" id="set-timer">
+    <h3>⏲️ Set Rest Timer</h3>
+    <p>Rest time between sets:</p>
+    <span id="countdown">--</span><br>
+    <button onclick="startSetTimer()">Start Timer</button>
+  </div>
+
+  <script>
+    let workout = '', preference = '', time = '';
+    let stopwatchInterval, seconds = 0;
+    let setRestTime = 0;
+
+    const exercises = {
+      legs: {
+        calisthenics: ['Wall Sit', 'Jump Squats', 'Step-ups', 'Glute Bridges', 'Lunges'],
+        weights: ['Goblet Squat', 'Bulgarian Split Squat', 'Romanian Deadlift', 'Hip Thrust', 'Leg Press'],
+        machines: ['Leg Curl Machine', 'Leg Extension', 'Hack Squat', 'Smith Machine Squat', 'Calf Raise Machine']
+      },
+      push: {
+        calisthenics: ['Push-ups', 'Dips', 'Incline Push-ups', 'Shoulder Taps', 'Pike Push-ups'],
+        weights: ['Dumbbell Press', 'Overhead Press', 'Incline Bench Press', 'Arnold Press', 'Dumbbell Fly'],
+        machines: ['Chest Press', 'Shoulder Press Machine', 'Cable Fly', 'Pec Deck', 'Triceps Pushdown']
+      },
+      pull: {
+        calisthenics: ['Pull-ups', 'Chin-ups', 'Body Rows', 'Superman Raises', 'Towel Curls'],
+        weights: ['Barbell Row', 'Dumbbell Curl', 'Lat Pulldown', 'Dumbbell Row', 'Face Pull'],
+        machines: ['Lat Pulldown Machine', 'Seated Row Machine', 'Cable Curl', 'Rear Delt Machine', 'Assisted Pull-up']
+      }
+    };
+
+    function selectWorkout(val) {
+      workout = val;
+      document.getElementById('question1').style.display = 'none';
+      document.getElementById('question2').style.display = 'block';
+    }
+
+    function selectPreference(val) {
+      preference = val;
+      document.getElementById('question2').style.display = 'none';
+      document.getElementById('question3').style.display = 'block';
+    }
+
+    function selectTime(val) {
+      time = val;
+      document.getElementById('question3').style.display = 'none';
+      showRoutine();
+    }
+
+    function showRoutine() {
+      let type = preference === 'love' ? 'calisthenics' : preference === 'ok' ? 'weights' : 'machines';
+      let routine = [...exercises[workout][type]].sort(() => 0.5 - Math.random());
+      let reps, sets, rest, note = '';
+
+      if (time === 'long') {
+        reps = type === 'calisthenics' ? '8–12 slow reps' : 'light weight, 12–15 reps';
+        sets = '4 sets';
+        rest = '3 mins between sets & reps';
+        note = '<strong>Make each rep slow and controlled.</strong>';
+        setRestTime = 180;
+        routine = routine.slice(0, 5);
+      } else if (time === 'medium') {
+        reps = type === 'calisthenics' ? '12–15 reps' : 'moderate weight, 8–10 reps';
+        sets = '3 sets';
+        rest = '2 mins between sets';
+        setRestTime = 120;
+        routine = routine.slice(0, 5);
+      } else {
+        reps = type === 'calisthenics' ? '20–30 fast reps' : 'heavy weight, 4–6 reps';
+        sets = '2 sets';
+        rest = '3 mins between sets';
+        setRestTime = 180;
+        routine = routine.slice(0, 4);
+      }
+
+      let output = `<h2>Your ${workout.toUpperCase()} Routine (${type})</h2>`;
+      output += `<p>${sets} of each exercise • ${reps} • ${rest}</p>`;
+      output += `<ul>${routine.map(ex => `<li>${ex}</li>`).join('')}</ul>`;
+      if (note) output += `<p style="color: darkgreen;">${note}</p>`;
+      document.getElementById('result').innerHTML = output;
+
+      document.getElementById('stopwatch').style.display = 'block';
+      document.getElementById('set-timer').style.display = 'block';
+    }
+
+    // Stopwatch functions
+    function startStopwatch() {
+      if (stopwatchInterval) return;
+      stopwatchInterval = setInterval(() => {
+        seconds++;
+        updateStopwatch();
+      }, 1000);
+    }
+
+    function stopStopwatch() {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
+    }
+
+    function resetStopwatch() {
+      stopStopwatch();
+      seconds = 0;
+      updateStopwatch();
+    }
+
+    function updateStopwatch() {
+      let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+      let secs = (seconds % 60).toString().padStart(2, '0');
+      document.getElementById('display').textContent = `${mins}:${secs}`;
+    }
+
+    // Set Timer
+    function startSetTimer() {
+      let countdown = setRestTime;
+      const countdownEl = document.getElementById('countdown');
+      countdownEl.textContent = countdown + "s";
+
+      const interval = setInterval(() => {
+        countdown--;
+        countdownEl.textContent = countdown + "s";
+        if (countdown <= 0) {
+          clearInterval(interval);
+          countdownEl.textContent = "⏰ Time to start next set!";
+          alert("Rest time over! Start your next set.");
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
